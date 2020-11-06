@@ -22,7 +22,7 @@
             </c:when>
             <c:otherwise>
                 <c:forEach  items="${allU}" var="u">
-                    <input type="radio" value="${u.username}" name="user">${u.username}<br/>
+                    <input type="radio" value="${u}" name="user">${u}<br/>
                 </c:forEach>
             </c:otherwise>
         </c:choose>

@@ -1,4 +1,4 @@
-<%@ page import="connection.User" %>
+<%@ page import="model.User" %>
 <%@ page import="java.util.Set" %>
 <%--
   Created by IntelliJ IDEA.

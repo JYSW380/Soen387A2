@@ -30,7 +30,7 @@ public class ServletExtractUser extends HttpServlet {
 
         JSONArray obj1 = null;
         try {
-            obj1 = (JSONArray) new JSONParser().parse(new FileReader("users.json"));
+            obj1 = (JSONArray) new JSONParser().parse(new FileReader("C:\\Users\\Owner\\IdeaProjects\\Soen387A2\\users.json"));
         } catch (ParseException e) {
             e.printStackTrace();
         }
