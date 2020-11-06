@@ -1,4 +1,4 @@
 #Thu Oct 29 18:35:05 EDT 2020
 db.user=root
 db.url=jdbc:mysql://localhost:3307/
-db.pwd=DBpassword
+db.pwd=hkc610787

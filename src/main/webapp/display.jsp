@@ -72,6 +72,8 @@
         </c:otherwise>
     </c:choose>
 
-
+    <form action="ServletPostManager" method="get">
+        <input type="submit" value="LogOut" name="LogOut">
+    </form>
 </body>
 </html>

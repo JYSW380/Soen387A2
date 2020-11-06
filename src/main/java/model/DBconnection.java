@@ -17,6 +17,10 @@ public class DBconnection {
     private static String DB_PASSWORD;
     private static Connection conn = null;
 
+    /**
+     * to connect to database with myProperties.prop for url , user and password
+     * @return
+     */
     public static Connection getConnection(){
         Properties p;
         FileInputStream input = null;
@@ -38,8 +42,6 @@ public class DBconnection {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
         return conn;
 
     }

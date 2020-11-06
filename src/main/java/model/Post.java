@@ -2,9 +2,9 @@ package model;
 import java.io.Serializable;
 import java.time.LocalTime;
 
-public class Post{
+public class Post implements Serializable{
 
-    // delete the edit out of the message and hashtag
+
     private int id;
     private String userName;
     private LocalTime timeStamp;

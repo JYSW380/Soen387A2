@@ -24,10 +24,15 @@ import java.util.Map;
 
 @WebServlet("/ServletExtractUser")
 public class ServletExtractUser extends HttpServlet {
+    /**
+     * list all the user name from the json file
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-
         JSONArray obj1 = null;
         try {
             obj1 = (JSONArray) new JSONParser().parse(new FileReader("C:\\Users\\Owner\\IdeaProjects\\Soen387A2\\users.json"));

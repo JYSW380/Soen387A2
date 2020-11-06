@@ -19,27 +19,14 @@ import java.util.List;
         maxRequestSize = 1024 * 1024 * 5 * 5)
 @WebServlet("/ServletPostManager")
 public class ServletPostManager extends HttpServlet {
-    @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Post> allPost= new ArrayList<>();
-        DBQuerry db = new DBQuerry();
-        allPost= db.getAllPost();
-        request.getSession().setAttribute("allPost",allPost);
-        String method = request.getMethod();
-        switch (method.toLowerCase()){
-            case "post":
-                doPost(request,response);
-                break;
-            case "get":
-                doGet(request,response);
-                break;
-            default:
-                RequestDispatcher redirect = request.getRequestDispatcher("display.jsp");
-                redirect.forward(request,response);
-                break;
 
-        }
-    }
+
+    /**
+     * extract the part from file upload from client
+     * @param request
+     * @param name
+     * @return
+     */
     public Part extractFile(HttpServletRequest request,String name){
         Part part =null;
         try {
@@ -51,6 +38,13 @@ public class ServletPostManager extends HttpServlet {
         }
         return part;
     }
+
+    /**
+     * write the file from the database to the client
+     * @param response
+     * @param inputStream
+     * @throws IOException
+     */
     private void w2file(HttpServletResponse response, InputStream inputStream) throws IOException {
         String type = ".txt";
         response.setContentType("text/plain");
@@ -68,12 +62,18 @@ public class ServletPostManager extends HttpServlet {
         res.close();
     }
 
-
+    /**
+     * handle create a post ,  edit delete update file of the post
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         DBQuerry db = new DBQuerry();
         List<Post> allPost= new ArrayList<>();
-        String userName ="user1";
+        String userName = (String) session.getAttribute("user");
         String message = request.getParameter("message");
         String edit = request.getParameter("edit");
         String delete = request.getParameter("delete");
@@ -122,20 +122,45 @@ public class ServletPostManager extends HttpServlet {
         redirect.forward(request,response);
     }
 
+    /**
+     * handle log out and search of the username or hashtag
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String search = request.getParameter("search");
-        List<Post> searchPost = new ArrayList<>();
-        HttpSession session = request.getSession();
-        session.setAttribute("user","user1");
+        List<Post> allPost= new ArrayList<>();
         DBQuerry db = new DBQuerry();
-        if (search !=null){
-            searchPost =db.search(request.getParameter("searchText"));
+        String logOut = request.getParameter("LogOut");
+        String search = request.getParameter("search");
+        HttpSession session = request.getSession();
+        if(logOut !=null){
+            System.out.println("inside logout");
+            session.removeAttribute("user");
+            session.removeAttribute("allPost");
+            session.removeAttribute("searchPost");
+            System.out.println("after remove");
+            RequestDispatcher redirect = request.getRequestDispatcher("index.jsp");
+            redirect.forward(request,response);
         }
-        for(Post p : searchPost){
-            System.out.println(p);
+        else if(search !=null){
+            List<Post> searchPost = new ArrayList<>();
+            if (search !=null){
+                searchPost =db.search(request.getParameter("searchText"));
+            }
+            for(Post p : searchPost){
+                System.out.println(p);
+            }
+            request.getSession().setAttribute("searchPost",searchPost);
+            RequestDispatcher redirect = request.getRequestDispatcher("display.jsp");
+            redirect.forward(request,response);
         }
-        request.getSession().setAttribute("searchPost",searchPost);
-        RequestDispatcher redirect = request.getRequestDispatcher("display.jsp");
-        redirect.forward(request,response);
+        else{
+            allPost= db.getAllPost();
+            request.getSession().setAttribute("allPost",allPost);
+            RequestDispatcher redirect = request.getRequestDispatcher("display.jsp");
+            redirect.forward(request,response);
+        }
     }
 }

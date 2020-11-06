@@ -11,12 +11,18 @@ import java.io.IOException;
 
 @WebServlet("/ServletAuth")
 public class ServletAuth extends HttpServlet {
-
+    /**
+     * to set the user authetication to the one that is selected , save only the string
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         session.setAttribute("user",request.getParameter("user"));
 //        System.out.println(request.getParameter("user"));
-        RequestDispatcher redirect = request.getRequestDispatcher("display.jsp");
+        RequestDispatcher redirect = request.getRequestDispatcher("ServletPostManager");
         redirect.forward(request,response);
     }
 }

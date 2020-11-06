@@ -12,64 +12,10 @@ import java.util.List;
 
 
 public class DBQuerry {
-    // extract user
-    // all the function fro message
-
-    private User extractUserFromRS(ResultSet rs) throws SQLException {
-        User user = new User();
-        user.setUsername(rs.getString("username"));
-        user.setPwd(rs.getString("pwd"));
-        return user;
-    }
-//    public User getUser(String userName) throws SQLException{
-//        Connection con = DBconnection.getConnection();
-//        try{
-//            Statement stmt = con.createStatement();
-//            String sql = "SELECT * FROM user_details WHERE username="+userName;
-//            ResultSet rs= stmt.executeQuery(sql);
-//            return extractUserFromRS(rs);
-//        }
-//        catch (SQLException e){
-//            e.printStackTrace();
-//        }
-//        finally {
-//            try{
-//                con.close();
-//            }
-//            catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return null;
-//    }
-
-    public List<User> getAllUsers(){
-        Connection con = DBconnection.getConnection();
-        List<User> users = new ArrayList();
-        try{
-            Statement stmt = con.createStatement();
-            String sql = "SELECT * FROM users_info";
-            ResultSet rs= stmt.executeQuery(sql);
-            while(rs.next()){
-                // it would automatically increment the pointer of rs
-                User user = extractUserFromRS(rs);
-                users.add(user);
-            }
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        finally {
-            try{
-                con.close();
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        return users;
-
-    }
+    /**
+     * get all the post
+     * @return
+     */
     public List<Post> getAllPost(){
         Connection con = DBconnection.getConnection();
         List<Post> allPost = new ArrayList();
@@ -97,6 +43,12 @@ public class DBQuerry {
         }
         return allPost;
     }
+
+    /**
+     * get File from the post
+     * @param id
+     * @return
+     */
     public InputStream getFileUpload(int id ){
         Connection con = DBconnection.getConnection();
         InputStream inputStream=null;
@@ -105,13 +57,8 @@ public class DBQuerry {
             String query = "SELECT fileUpload from post where id="+id;
             Statement statement = con.createStatement();
             ResultSet rs = statement.executeQuery(query);
-//            PreparedStatement ps = con.prepareStatement(query);
-//            ps.setInt(1, id);
-//            ResultSet rs= ps.executeQuery(query);
             while(rs.next()){
-                // it would automatically increment the pointer of rs
-
-                fileUploadBlob=rs.getBlob("fileUpload");
+              fileUploadBlob=rs.getBlob("fileUpload");
             }
         }
         catch (SQLException e){
@@ -136,6 +83,12 @@ public class DBQuerry {
         }
         return null;
     }
+
+    /**
+     * extract post form the result set
+     * @param rs
+     * @return
+     */
     private Post extractPostFromRS(ResultSet rs) {
         try {
             Post post = new Post();
@@ -158,7 +111,12 @@ public class DBQuerry {
         return null;
     }
 
-
+    /**
+     * insert post into the database
+     * @param post
+     * @param inputStream
+     * @return
+     */
     public boolean insertPost(Post post , InputStream inputStream){
         Connection con = DBconnection.getConnection();
         try{
@@ -195,14 +153,15 @@ public class DBQuerry {
         return false;
     }
 
+    /**
+     * search by username and hashtag
+     * @param search
+     * @return
+     */
     public List<Post> search(String search){
         List<Post> result = new ArrayList<>();
         Connection con = DBconnection.getConnection();
         try{
-//            LocalTime timeStamp;
-//            if(search.contains(":")){
-//                timeStamp = LocalTime.parse(search, DateTimeFormatter.ofPattern("HH:mm:ss"));
-//            }
             String query="SELECT * FROM post where ";
             String [] toSearch = {"user=","hashTag="};
             for(int i =0;i <2; i++){
@@ -236,6 +195,11 @@ public class DBQuerry {
         return result;
     }
 
+    /**
+     * delete the post from database
+     * @param id
+     * @return
+     */
     public boolean deletePost(int id){
         Connection con = DBconnection.getConnection();
         try {
@@ -258,6 +222,14 @@ public class DBQuerry {
         }
         return false;
     }
+
+    /**
+     * update the post in the database
+     * @param id
+     * @param post
+     * @param inputStream
+     * @return
+     */
     public boolean updatePost(int id, Post post, InputStream inputStream){
         Connection con = DBconnection.getConnection();
         try{
