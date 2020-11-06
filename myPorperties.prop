@@ -1,0 +1,4 @@
+#Thu Oct 29 18:35:05 EDT 2020
+db.user=jack
+db.url=localhost
+db.pwd=12345
