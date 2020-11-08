@@ -1,12 +1,8 @@
 package model;
 
-
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +17,7 @@ public class DBQuerry {
         List<Post> allPost = new ArrayList();
         try{
             Statement stmt = con.createStatement();
-            String sql = "SELECT * FROM post";
+            String sql = "SELECT * FROM post order by timeStamp DESC";
             ResultSet rs= stmt.executeQuery(sql);
             while(rs.next()){
                 Post post = extractPostFromRS(rs);
@@ -163,10 +159,10 @@ public class DBQuerry {
         Connection con = DBconnection.getConnection();
         try{
             String query="SELECT * FROM post where ";
+            String order= "order by timeStamp DESC";
             String [] toSearch = {"user=","hashTag="};
             for(int i =0;i <2; i++){
-                query += toSearch[i]+"?";
-                System.out.println(query);
+                query += toSearch[i]+"?"+order;
                 PreparedStatement ps = con.prepareStatement(query);
                 ps.setString(1, search);
                 ResultSet rs= ps.executeQuery();
