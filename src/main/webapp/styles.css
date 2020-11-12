@@ -1,0 +1,369 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+    font-family: Alata, sans-serif;
+    background: var(--bg);
+}
+
+:root {
+    --color: #02eb44;
+    --bg: #f8f9fd;
+    --txt: #b2bbca;
+}
+
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+.clear {
+    clear: both;
+}
+.spacers {
+    height: 30px;
+}
+.spacer {
+    height: 50px;
+}
+.spacerl {
+    height: 100px;
+}
+* {
+    box-sizing: border-box;
+    letter-spacing: 0.2px;
+}
+::selection {
+    background: var(--color);
+    color: white;
+}
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+.hidescroll::-webkit-scrollbar {
+    display: none;
+}
+::-webkit-scrollbar-track {
+    background: #eee;
+    border-radius: 50px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--color);
+    border-radius: 50px;
+}
+h1,h2,h3,h4,h5,h6,i,p,li,button,a,span,small,img,section,input,label {
+    position: relative;
+    margin: 0;
+}
+img {
+    object-fit: cover;
+    max-width: 100%;
+}
+button {
+    outline: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+    border-radius: 5px;
+    padding: 10px 20px;
+    background: var(--color);
+    color: #fff;
+    box-shadow: 0px 13px 16px -7px rgba(2,235,68,0.4);
+    white-space: nowrap;
+}
+button i {
+    transition: all 0.3s;
+    color: #fff;
+    left: 10px;
+}
+button:active {
+    transform: scale(0.975);
+}
+button:hover {
+    box-shadow: 0px 16px 16px -7px rgba(2,235,68,0.45);
+}
+button i {
+    margin-right: 10px;
+}
+input {
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+}
+a {
+    text-decoration: none;
+    color: #000;
+}
+input, textarea, select {
+    outline: none;
+}
+input::placeholder {
+    color: #bbb;
+}
+
+hr {
+    border: none;
+}
+
+.welcomecont {
+    position: fixed;
+    width: 100%;
+    height:  100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.submitbtn {
+    color: #fff;
+    padding: 15px 20px;
+    width: 130px;
+    font-size: 16px;
+}
+.submitbtn:hover i {
+    left: 15px;
+}
+.welcomecont h3 {
+    font-size: 25px;
+    color: rgba(51, 74, 87,0.75);
+    text-transform: uppercase;
+}
+.welcomediv {
+    position: relative;
+    width: 600px;
+    min-height: 500px;
+    background: #fff;
+    box-shadow: 0 1px 12px rgba(2, 235, 68,0.2);
+    border-radius: 10px;
+    display: flex;
+    padding: 50px;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid #02eb4425
+}
+.welcomediv i.mainicon {
+    font-size: 30px;
+    color: var(--color);
+    margin-bottom: 20px;
+    text-align: center;
+    width: 100%;
+}
+.welcomediv form {
+    text-align: center;
+}
+.selectuserinp {
+    position: relative;
+    margin: 20px auto;
+    padding: 15px;
+    width: 240px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.selectuserinp:hover {
+    background: #f5f5f5;
+}
+.selectuserinp span {
+    color: #999;
+    text-transform: capitalize;
+}
+.selectuserinp span i {
+    margin-right: 10px;
+}
+.selectuserinp input {
+    top: 2px;
+    height: 20px;
+    width: 20px;
+}
+
+.messageboard {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    width: 1200px;
+    margin: auto;
+    height: 100%;
+}
+.messageboard form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.messageboard h3 {
+    color: #555;
+    white-space: nowrap;
+    margin-right: 40px;
+}
+.mainleft {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+.mainright {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.userdiv {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 15px;
+    transition: all 0.3s;
+    border-radius: 40px;
+    cursor: pointer;
+    margin-left: 20px;
+}
+.userdiv:hover {
+    background: #02eb4415;
+}
+.userdiv  h6 {
+    font-size: 13px;
+    color: var(--color);
+    text-transform: capitalize;
+}
+.userdiv i {
+    color: var(--color);
+    margin-right: 10px;
+}
+
+nav {
+    position: relative;
+    width: 100%;
+    padding: 20px 10px;
+    background: #fff;
+    border: 1px solid #02eb4425;
+    border-radius: 0 0 10px 10px;
+}
+.mainsearch {
+    width: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.mainsearch input {
+    width: 250px;
+    padding: 15px 10px;
+    background: #f5f5f5;
+    transition: all 0.3s;
+}
+.mainsearch input:focus {
+    width: 300px;
+}
+.mainleft button {
+    padding: 15px 30px;
+    left: -5px;
+}
+.mainleft button i {
+    left: auto;
+    margin: auto;
+    font-size: 15px;
+}
+.posterdiv {
+    position: relative;
+    padding: 20px;
+    width: 100%;
+    background: #fff;
+    border-radius: 10px;
+}
+.posterdiv input {
+    width: 300px;
+}
+.posterdiv input[type="file"] {
+    clip-path: polygon(33% 0, 100% 0, 100% 100%, 33% 100%);
+    -webkit-clip-path: polygon(33% 0, 100% 0, 100% 100%, 33% 100%);
+}
+.messagerow input[type="file"] {
+    clip-path: polygon(36% 0, 100% 0, 100% 100%, 36% 100%);
+    -webkit-clip-path: polygon(36% 0, 100% 0, 100% 100%, 36% 100%);
+}
+i.uploadfile {
+    font-size: 18px;
+    color: #333;
+    background: #eee;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+i.uploadfile:hover {
+    background: #ddd;
+}
+.messagerow {
+    width: 95%;
+    margin: 10px 0;
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 10px;
+}
+.messagerow form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+}
+.messagerow form > div {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.messagerow form > div label {
+    margin-right: 10px;
+}
+.filelabel {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px dashed #ccc;
+}
+
+.boardcontent {
+    position: relative;
+    height: 80%;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media  (max-width: 620px) {
+    .welcomediv {
+        width: 95%;
+    }
+}
+@media  (max-width: 1220px) {
+    .messageboard {
+        width: 95%;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
