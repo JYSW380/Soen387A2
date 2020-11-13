@@ -25,7 +25,7 @@ public class DBconnection {
         Properties p;
         FileInputStream input = null;
         try {
-            input = new FileInputStream("C:\\Users\\Owner\\IdeaProjects\\Soen387A2\\myPorperties.prop");
+            input = new FileInputStream("C:\\Users\\Owner\\IdeaProjects\\A2\\myPorperties.prop");
             p= new Properties();
             if (input == null) {
                 System.out.println("file not found");

@@ -321,6 +321,9 @@ i.uploadfile:hover {
 .messagerow form > div label {
     margin-right: 10px;
 }
+.messagerow form > div input[type="text"] {
+    width: available;
+}
 .filelabel {
     padding: 5px 10px;
     border-radius: 5px;

@@ -97,6 +97,7 @@ public class ServletPostManager extends HttpServlet {
         }
         else if(edit !=null){
             message= request.getParameter("editMessage");
+//            message =message.replace("<br/>", "");
             Post p= new Post(userName,message);
             Part part = extractFile(request, "updateFile");
             if(part!=null){

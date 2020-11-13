@@ -124,10 +124,10 @@ public class DBQuerry {
                 query +="default)";
             }
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, post.getUserName());
-            ps.setString(2, post.getMessage());
+            ps.setString(1, post.getUserName().trim());
+            ps.setString(2, post.getMessage().trim());
             ps.setTime(3, Time.valueOf(post.getTimeStamp()));
-            ps.setString(4, post.getHashTag());
+            ps.setString(4, post.getHashTag().trim());
             if(inputStream!=null){
                 ps.setBlob(5,inputStream);
             }
@@ -159,11 +159,13 @@ public class DBQuerry {
         Connection con = DBconnection.getConnection();
         try{
             String query="SELECT * FROM post where ";
-            String order= "order by timeStamp DESC";
+            String order= " order by timeStamp DESC";
+            String proQuery;
             String [] toSearch = {"user=","hashTag="};
             for(int i =0;i <2; i++){
-                query += toSearch[i]+"?"+order;
-                PreparedStatement ps = con.prepareStatement(query);
+                proQuery=query;
+                proQuery += toSearch[i]+"?"+order;
+                PreparedStatement ps = con.prepareStatement(proQuery);
                 ps.setString(1, search);
                 ResultSet rs= ps.executeQuery();
                 while(rs.next()){

@@ -86,14 +86,25 @@
              </c:choose>
             <c:choose>
                 <c:when test="${not empty searchPost}">
+                    <p>Result Search</p>
                     <c:forEach items="${searchPost}" var="spost" >
-                        <div>
-                            <p>
-                                    ${spost} <%//result of the search%>
-                            </p>
+                        <div class="messagerow">
+                            <span>
+                                    ${spost.message} <%//result of the search%>
+                            </span>
+                            <span>
+                                    # ${spost.hashTag} <%//result of the search%>
+                            </span>
+                            <span>
+                                    ${spost.updateTime} <%//result of the search%>
+                            </span>
+                            <span>
+                                   by ${spost.userName} <%//result of the search%>
+                            </span>
                         </div>
                     </c:forEach>
                 </c:when>
+
             </c:choose>
                 <div class="spacerl"></div>
             </div>

@@ -11,9 +11,6 @@ public class Post implements Serializable{
     private String hashTag;
     private String message;
     private boolean update;
-
-
-
     private LocalTime updateTime;
 
     public Post(){
