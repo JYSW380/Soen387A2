@@ -29,8 +29,10 @@
         <form action="ServletExtractUser" method="get">
             <button class="submitbtn">Enter<i class="far fa-long-arrow-right"></i></button>
         </form>
+        <form action="ServletServletSignup" method="get">
+            <button class="signupbtn">Sign up<i class="far fa-long-arrow-right"></i></button>
+        </form>
     </div>
-
 </div>
 
 
