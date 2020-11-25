@@ -1,0 +1,16 @@
+[{
+  "name":"admins"
+},{
+  "name":"concordia"
+},{
+  "name":"encs",
+  "parent":"concordia"
+},{
+  "name":"comp",
+  "parent":"encs"
+},
+  {
+    "name":"soen",
+    "parent":"encs"
+  }
+]

@@ -1,28 +1,46 @@
 package model;
 
+import Helper.DBQuerryInterface;
+
 import java.io.InputStream;
 import java.sql.*;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
-public class DBQuerry {
+public class DBQuerry implements DBQuerryInterface {
     /**
      * get all the post
      * @return
      */
-    public List<Post> getAllPost(){
+    @Override
+    public Map<String, ArrayList<Post>> getAllPost(Set<String> userGroup){
+        // get post by their group and public too
         Connection con = DBconnection.getConnection();
+        Map<String, ArrayList<Post>> postByGroup = new HashMap<>();
         List<Post> allPost = new ArrayList();
         try{
-            Statement stmt = con.createStatement();
-            String sql = "SELECT * FROM post order by timeStamp DESC";
-            ResultSet rs= stmt.executeQuery(sql);
+            String query = "SELECT * FROM post where group_name=? order by timeStamp ASC";
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rs=null;
+            for(String s: userGroup){
+                postByGroup.put(s, new ArrayList<>());
+                ps.setString(1,s);
+                rs= ps.executeQuery();
+                while(rs.next()){
+                    Post post = extractPostFromRS(rs);
+                    if(post!=null){
+                        postByGroup.get(s).add(post);
+                    }
+                }
+            }
+            postByGroup.put("public", new ArrayList<>());
+            ps.setString(1,"public");
+            rs= ps. executeQuery();
             while(rs.next()){
                 Post post = extractPostFromRS(rs);
                 if(post!=null){
-                    allPost.add(post);
+                    postByGroup.get("public").add(post);
                 }
             }
         }
@@ -37,7 +55,7 @@ public class DBQuerry {
                 e.printStackTrace();
             }
         }
-        return allPost;
+        return postByGroup;
     }
 
     /**
@@ -45,7 +63,8 @@ public class DBQuerry {
      * @param id
      * @return
      */
-    public InputStream getFileUpload(int id ){
+    @Override
+    public InputStream getFileUpload(int id){
         Connection con = DBconnection.getConnection();
         InputStream inputStream=null;
         Blob fileUploadBlob= null;
@@ -81,42 +100,16 @@ public class DBQuerry {
     }
 
     /**
-     * extract post form the result set
-     * @param rs
-     * @return
-     */
-    private Post extractPostFromRS(ResultSet rs) {
-        try {
-            Post post = new Post();
-            post.setId(rs.getInt("id"));
-            post.setUser(rs.getString("user"));
-            post.setMessage(rs.getString("message"));
-            post.setTimeStamp( LocalTime.parse(String.valueOf(rs.getTime("timeStamp"))));
-            post.setHashTag(rs.getString("hashTag"));
-            if(rs.getTime("updateTime")==null){
-                post.setUpdateTime(null);
-            }
-            else{
-                post.setUpdateTime(LocalTime.parse(String.valueOf(rs.getTime("updateTime"))));
-            }
-
-             return post;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
      * insert post into the database
      * @param post
      * @param inputStream
      * @return
      */
-    public boolean insertPost(Post post , InputStream inputStream){
+    @Override
+    public boolean insertPost(Post post, InputStream inputStream){
         Connection con = DBconnection.getConnection();
         try{
-            String query = "INSERT INTO post VALUES (default, ?,?,?,?,default,";
+            String query = "INSERT INTO post VALUES (default, ?,?,?,?,?,default,";
             if(inputStream!=null){
                 query += "?)";
             }
@@ -124,12 +117,13 @@ public class DBQuerry {
                 query +="default)";
             }
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, post.getUserName().trim());
-            ps.setString(2, post.getMessage().trim());
+            ps.setString(1,post.getUserName()!=""? post.getUserName().trim():"");
+            ps.setString(2, post.getMessage()!=""? post.getMessage().trim():"");
             ps.setTime(3, Time.valueOf(post.getTimeStamp()));
-            ps.setString(4, post.getHashTag().trim());
+            ps.setString(4,post.getHashTag()!=""? post.getHashTag().trim():"");
+            ps.setString(5,post.getGroup());
             if(inputStream!=null){
-                ps.setBlob(5,inputStream);
+                ps.setBlob(6,inputStream);
             }
             int i= ps.executeUpdate();
             return i==1;
@@ -154,19 +148,43 @@ public class DBQuerry {
      * @param search
      * @return
      */
-    public List<Post> search(String search){
+    @Override
+    public List<Post> search(String search , Set<String> userGroup){
+        // search all the group that he has
         List<Post> result = new ArrayList<>();
         Connection con = DBconnection.getConnection();
         try{
             String query="SELECT * FROM post where ";
             String order= " order by timeStamp DESC";
-            String proQuery;
+            String searchQuery;
+            String groupQuery;
             String [] toSearch = {"user=","hashTag="};
             for(int i =0;i <2; i++){
-                proQuery=query;
-                proQuery += toSearch[i]+"?"+order;
-                PreparedStatement ps = con.prepareStatement(proQuery);
+                searchQuery=query;
+                searchQuery += toSearch[i]+"?";
+                for(String s: userGroup){
+                    groupQuery=searchQuery;
+                    groupQuery += " AND group_name=?" +order;
+//                    System.out.println(groupQuery);
+                    PreparedStatement ps = con.prepareStatement(groupQuery);
+                    ps.setString(1, search);
+                    ps.setString(2, s);
+                    ResultSet rs= ps.executeQuery();
+                    while(rs.next()){
+                        Post post = extractPostFromRS(rs);
+                        if(post!=null){
+                            result.add(post);
+                        }
+                    }
+                    if(!result.isEmpty()){
+                        return result;
+                    }
+                }
+                groupQuery=searchQuery;
+                groupQuery += " AND where group_name=?" +order;
+                PreparedStatement ps = con.prepareStatement(groupQuery);
                 ps.setString(1, search);
+                ps.setString(2, "public");
                 ResultSet rs= ps.executeQuery();
                 while(rs.next()){
                     Post post = extractPostFromRS(rs);
@@ -198,6 +216,7 @@ public class DBQuerry {
      * @param id
      * @return
      */
+    @Override
     public boolean deletePost(int id){
         Connection con = DBconnection.getConnection();
         try {
@@ -220,6 +239,31 @@ public class DBQuerry {
         }
         return false;
     }
+    @Override
+    public Post getPostById(int id){
+        Connection con = DBconnection.getConnection();
+        Post post=null;
+        try {
+            String query = "SELECT * from post where id =?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, id);
+            ResultSet rs =ps.executeQuery();
+            rs.next();
+            post = extractPostFromRS(rs);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+        finally {
+            try{
+                con.close();
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return post;
+    }
 
     /**
      * update the post in the database
@@ -228,10 +272,11 @@ public class DBQuerry {
      * @param inputStream
      * @return
      */
+    @Override
     public boolean updatePost(int id, Post post, InputStream inputStream){
         Connection con = DBconnection.getConnection();
         try{
-            String query="UPDATE post SET message=?, hashTag=?, updateTime=?";
+            String query="UPDATE post SET message=?, hashTag=?, updateTime=?, group_name=?";
             if(inputStream !=null){
                 query += ", fileUpload =? where id=?";
             }
@@ -243,12 +288,13 @@ public class DBQuerry {
             ps.setString(1, post.getMessage());
             ps.setString(2, post.getHashTag());
             ps.setTime(3, Time.valueOf(LocalTime.now()));
+            ps.setString(4, post.getGroup()) ;
             if(inputStream!=null){
-                ps.setBlob(4, inputStream);
-                ps.setInt(5, id);
+                ps.setBlob(5, inputStream);
+                ps.setInt(6, id);
             }
             else{
-                ps.setInt(4, id);
+                ps.setInt(5, id);
             }
             int i= ps.executeUpdate();
             return i==1;

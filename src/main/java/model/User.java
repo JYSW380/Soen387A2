@@ -6,21 +6,27 @@ import java.security.NoSuchAlgorithmException;
 
 public class User implements Serializable {
 
+
+
+
+    private static int idCount=1;
+    private static int id;
     private String username;
+    private String email;
     private String pwd;
+
+
+    public User( String username, String email, String pwd) {
+        this.id = idCount++;
+        this.username = username;
+        this.email = email;
+        this.pwd = hashPassword(pwd);
+    }
 
     public User() {
     }
 
-    public User(String username,  String pwd) {
 
-        this.username = username;
-        try {
-            this.pwd = hashPassword(pwd);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-    }
     public String getUsername() {
         return username;
     }
@@ -37,24 +43,22 @@ public class User implements Serializable {
     }
 
     public void setPwd(String pwd) {
-        try {
-            this.pwd = hashPassword(pwd);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        this.pwd = hashPassword(pwd);
     }
 
 
     @Override
     public String toString() {
-        return "User{" +
-                "username='" + username + '\'' +
-                ", pwd='" + pwd + '\'' +
-                '}';
+        return username ;
     }
-    public String hashPassword(String password) throws NoSuchAlgorithmException {
+    public String hashPassword(String password) {
 
-        MessageDigest md = MessageDigest.getInstance("SHA");  //MD5
+        MessageDigest md = null;  //MD5
+        try {
+            md = MessageDigest.getInstance("SHA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         md.update(password.getBytes());
         byte[] b =md.digest();
         StringBuffer sb = new StringBuffer();
@@ -63,6 +67,26 @@ public class User implements Serializable {
         }
         return sb.toString();
     }
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public static String computePwd(String pwd){
+        return new User().hashPassword(pwd);
+    }
+
 
 
 }

@@ -1,18 +1,18 @@
 package servlet;
 
 
-import model.*;
+import model.DBQuerry;
+import model.Post;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024,
         maxFileSize = 1024 * 1024 * 5,
@@ -62,6 +62,48 @@ public class ServletPostManager extends HttpServlet {
         res.close();
     }
 
+    private void w2file(HttpServletResponse response,String type, Post post) throws IOException {
+        response.setContentType(!type.equals("xml")? "text/plain ": "text/xml" + ";charset=UTF-8" );
+
+        String repName =  "post."+type;
+        response.setHeader("Content-disposition", "attachment; " +
+                "filename=" + repName);
+
+        ServletOutputStream res = response.getOutputStream();
+        if(type.equals("xml")){
+            res.print("<?xml version='1.0'?>");
+            res.print("<root>");
+//            for(Object [] el: chatmessage){
+                try {
+                    res.print("<post>");
+                    res.print("<message> Message: "+post.getMessage()+"</message>");
+                    res.print("<hashTag> #: "+post.getHashTag()+"</hashTag>");
+                    res.print("<userName> owner: "+post.getUserName()+"</userName>");
+                    res.print("<group> in: "+post.getGroup()+"</group>");
+                    res.print("</post>");
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//            }
+            res.print("</root>");
+        }
+        else    {
+//            for(Object [] el: chatmessage){
+                try {
+                    res.print("Message: "+post.getMessage());
+                    res.print("#: "+post.getHashTag());
+                    res.print("owner: "+post.getUserName());
+                    res.print("in: "+post.getGroup());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//            }
+        }
+        res.flush();
+        res.close();
+    }
+
     /**
      * handle create a post ,  edit delete update file of the post
      * @param request
@@ -72,8 +114,8 @@ public class ServletPostManager extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         DBQuerry db = new DBQuerry();
-        List<Post> allPost= new ArrayList<>();
-        String userName = (String) session.getAttribute("user");
+        Map<String, ArrayList<Post>> allPost= new HashMap<>();
+        String userName = (String)session.getAttribute("user");
         String message = request.getParameter("message");
         String edit = request.getParameter("edit");
         String delete = request.getParameter("delete");
@@ -87,18 +129,30 @@ public class ServletPostManager extends HttpServlet {
             db.deletePost(id);
         }
         else if(download!=null){
-            InputStream inputStream = db.getFileUpload(id);
-            if(inputStream!=null){
-                w2file(response, inputStream);
+            String isxml = request.getParameter("xml");
+            if(isxml ==null){
+                InputStream inputStream = db.getFileUpload(id);
+                if(inputStream!=null){
+                    w2file(response, inputStream);
+                }
+                else{
+                    w2file(response, InputStream.nullInputStream());
+                }
             }
             else{
-                w2file(response, InputStream.nullInputStream());
+                Post post = db.getPostById(id);
+                if(post!=null){
+                    w2file(response,isxml,post);
+                }
+
             }
+
         }
         else if(edit !=null){
+            String group = request.getParameter("editGroup");
             message= request.getParameter("editMessage");
 //            message =message.replace("<br/>", "");
-            Post p= new Post(userName,message);
+            Post p= new Post(userName,message, group);
             Part part = extractFile(request, "updateFile");
             if(part!=null){
                 db.updatePost(id,p, part.getInputStream());
@@ -108,7 +162,8 @@ public class ServletPostManager extends HttpServlet {
             }
         }
         else{
-            Post post= new Post(userName,message);
+            String group = request.getParameter("group");
+            Post post= new Post(userName,message, group);
             Part part = extractFile(request, "file");
             if(part!=null){
                 db.insertPost(post , part.getInputStream());
@@ -117,7 +172,8 @@ public class ServletPostManager extends HttpServlet {
                 db.insertPost(post , null);
             }
         }
-        allPost= db.getAllPost();
+        Set<String> userGroup = (Set<String>) session.getAttribute("userGroup");
+        allPost= db.getAllPost(userGroup);
         request.getSession().setAttribute("allPost",allPost);
         RequestDispatcher redirect = request.getRequestDispatcher("display.jsp");
         redirect.forward(request,response);
@@ -131,7 +187,7 @@ public class ServletPostManager extends HttpServlet {
      * @throws IOException
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Post> allPost= new ArrayList<>();
+        Map<String, ArrayList<Post>> allPost= new HashMap<>();
         DBQuerry db = new DBQuerry();
         String logOut = request.getParameter("LogOut");
         String search = request.getParameter("search");
@@ -148,17 +204,16 @@ public class ServletPostManager extends HttpServlet {
         else if(search !=null){
             List<Post> searchPost = new ArrayList<>();
             if (search !=null){
-                searchPost =db.search(request.getParameter("searchText"));
-            }
-            for(Post p : searchPost){
-                System.out.println(p);
+                Set<String> userGroup = (Set<String>) session.getAttribute("userGroup");
+                searchPost =db.search(request.getParameter("searchText"), userGroup);
             }
             request.getSession().setAttribute("searchPost",searchPost);
             RequestDispatcher redirect = request.getRequestDispatcher("display.jsp");
             redirect.forward(request,response);
         }
         else{
-            allPost= db.getAllPost();
+            Set<String> userGroup = (Set<String>) session.getAttribute("userGroup");
+            allPost= db.getAllPost(userGroup);
             request.getSession().setAttribute("allPost",allPost);
             RequestDispatcher redirect = request.getRequestDispatcher("display.jsp");
             redirect.forward(request,response);
