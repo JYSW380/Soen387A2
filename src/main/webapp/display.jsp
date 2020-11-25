@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%--
   Created by IntelliJ IDEA.
   User: Owner
@@ -35,6 +36,7 @@
                         <form action="ServletPostManager" method="get" class="logoutdiv">
                             <button type="submit" value="LogOut" name="LogOut">Log Out<i class="fal fa-power-off"></i></button>
                         </form>
+<%--                        why cannot call getter of user--%>
                         <div class="userdiv"><i class="fas fa-user-alt"></i><h6>${user}</h6></div>
                     </div>
                 </form>
@@ -42,66 +44,55 @@
             <div class="boardcontent">
             <form action="ServletPostManager" method="post" enctype="multipart/form-data" class="posterdiv">
                 <input type="text" name="message" placeholder="Enter a message..."><br/>
+                <select name="group" id="group">
+                    <option value=""> </option>
+                    <c:forEach items="${userGroup}" var="uGroup" >
+                        <option value="${uGroup}">${uGroup}</option>
+                    </c:forEach>
+                </select>
                 <label>
                     <input type="file" name="file">
                     <i class="fal fa-upload uploadfile"></i>
                 </label>
                 <button type="submit" value="post" name="post">Post</button>
             </form>
-            <c:choose>
-                <c:when test="${not empty allPost}">
 
-                    <c:forEach items="${allPost}" var="post" >
+<%--                empty is not working in hashmap since you always set key--%>
+<%--                <c:when test="${not empty allPost}">--%>
+
+                    <c:forEach items="${allPost}" var="groupPost" >
                         <div class="messagerow">
-                                <form action="ServletPostManager" method="post" enctype="multipart/form-data">
-                                    <div>
-                                        <div>
-                                            <label>Message</label>
-                                            <input type="text" value="${post}" name="editMessage">
-                                            <input type="hidden" value="${post.id}" name="id">
-                                        </div>
-                                        <button type="submit" value="download" name="download">Download<i class="fal fa-cloud-download-alt"></i></button>
-                                    </div>
-                                    <c:choose>
-                                        <c:when test= "${user.equals(post.userName)}">
-                                            <div>
-                                            <label class="filelabel">File
-                                                <input type="file" name="updateFile">
-                                                <i class="fal fa-upload uploadfile"></i>
-                                            </label>
-                                            <div>
-                                                <button type="submit" value="edit" name="edit">Edit<i class="fal fa-edit"></i></button>
-                                                <button type="submit" value="delete" name="delete">Delete<i class="fal fa-trash"></i></button>
-                                            </div>
-                                            </div>
-                                        </c:when>
-                                        <c:otherwise>
-                                        </c:otherwise>
-                                    </c:choose>
+                        ${groupPost.key}
+                            <c:if test="${empty groupPost.value}">
+                                <p>No post within the group</p>
+                            </c:if>
+                            <c:if test="${ not empty groupPost.value}">
+                                <c:forEach items="${groupPost.value}" var="post">
+                                    <form action="ServletPostManager" method="post" enctype="multipart/form-data">
+<%--                                        set value so the include page can use it --%>
+                                        <c:set var="currentPost" value="${post}" scope="session"></c:set>
+                                        <c:set var="uGroup" value="${EditGroup}" scope="session"></c:set>
+                                        <jsp:include page="post.jsp" />
+                                        <c:choose>
+                                            <c:when test= "${user.equals(post.userName) || fn:contains(userGroup, 'admins')}" >
+                                                <jsp:include page="extPost.jsp"></jsp:include>
+                                            </c:when>
+                                            <c:otherwise>
+                                            </c:otherwise>
+                                        </c:choose>
 
-                                </form>
+                                    </form>
+                                </c:forEach>
+                            </c:if>
                         </div>
+
                     </c:forEach>
-                </c:when>
-             </c:choose>
             <c:choose>
                 <c:when test="${not empty searchPost}">
                     <p>Result Search</p>
                     <c:forEach items="${searchPost}" var="spost" >
-                        <div class="messagerow">
-                            <span>
-                                    ${spost.message} <%//result of the search%>
-                            </span>
-                            <span>
-                                    # ${spost.hashTag} <%//result of the search%>
-                            </span>
-                            <span>
-                                    ${spost.updateTime} <%//result of the search%>
-                            </span>
-                            <span>
-                                   by ${spost.userName} <%//result of the search%>
-                            </span>
-                        </div>
+                        <c:set var="currentsPost" value="${spost}" scope="session"></c:set>
+                        <jsp:include page="searchPost.jsp" />
                     </c:forEach>
                 </c:when>
 

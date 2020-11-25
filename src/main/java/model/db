@@ -2,5 +2,5 @@ create database post;
 use post;
 
 create table post( id int auto_increment primary key, user varchar(20) not null, message varchar(255) default null,
-timeStamp time not null, hashTag varchar(50),updateTime time default null, fileUpload BLOB default null);
+timeStamp time not null, hashTag varchar(50),group_name varchar(20) ,updateTime time default null, fileUpload BLOB default null);
 

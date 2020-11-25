@@ -1,0 +1,14 @@
+[
+  {
+    "name":"john",
+    "group":"admins,concordia"
+  },
+  {
+    "name":"jane",
+    "group":"encs"
+  },
+  {
+    "name":"jack123",
+    "group":"soen"
+  }
+]

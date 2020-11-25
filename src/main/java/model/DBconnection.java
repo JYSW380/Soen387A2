@@ -1,8 +1,6 @@
 package model;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -25,7 +23,8 @@ public class DBconnection {
         Properties p;
         FileInputStream input = null;
         try {
-            input = new FileInputStream("C:\\Users\\Owner\\IdeaProjects\\A2\\myPorperties.prop");
+            // change the path
+            input = new FileInputStream("C:\\Users\\Owner\\IdeaProjects\\A2\\src\\main\\webapp\\WEB-INF\\myPorperties.prop");
             p= new Properties();
             if (input == null) {
                 System.out.println("file not found");

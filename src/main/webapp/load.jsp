@@ -25,14 +25,14 @@
         <div class="spacers"></div>
     <form action="ServletAuth" method="get">
         <c:choose>
-            <c:when test="${empty allU}">
+            <c:when test="${empty allUser}">
                 <h3>Currently, there are no employees.</h3>
             </c:when>
             <c:otherwise>
-                <c:forEach  items="${allU}" var="u">
+                <c:forEach  items="${allUser}" var="u">
                     <label class="selectuserinp">
-                        <span><i class="fas fa-user-alt"></i>${u}</span>
-                        <input type="radio" value="${u}" name="user">
+                        <span><i class="fas fa-user-alt"></i>${u.username}</span>
+                        <input type="radio" value="${u.username}" name="user">
                     </label>
                 </c:forEach>
             </c:otherwise>
