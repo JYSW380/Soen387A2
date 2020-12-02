@@ -1,6 +1,7 @@
 package servlet;
 
 
+import Helper.DBQuerryInterface;
 import model.DBQuerry;
 import model.Post;
 
@@ -10,6 +11,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -46,6 +48,8 @@ public class ServletPostManager extends HttpServlet {
      * @throws IOException
      */
     private void w2file(HttpServletResponse response, InputStream inputStream) throws IOException {
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expires", 0);
         String type = ".txt";
         response.setContentType("text/plain");
         String repName =  "fileDownload"+type;
@@ -63,43 +67,19 @@ public class ServletPostManager extends HttpServlet {
     }
 
     private void w2file(HttpServletResponse response,String type, Post post) throws IOException {
-        response.setContentType(!type.equals("xml")? "text/plain ": "text/xml" + ";charset=UTF-8" );
-
+        response.setContentType( "text/xml" + ";charset=UTF-8" );
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expires", 0);
         String repName =  "post."+type;
         response.setHeader("Content-disposition", "attachment; " +
                 "filename=" + repName);
 
         ServletOutputStream res = response.getOutputStream();
-        if(type.equals("xml")){
-            res.print("<?xml version='1.0'?>");
-            res.print("<root>");
-//            for(Object [] el: chatmessage){
-                try {
-                    res.print("<post>");
-                    res.print("<message> Message: "+post.getMessage()+"</message>");
-                    res.print("<hashTag> #: "+post.getHashTag()+"</hashTag>");
-                    res.print("<userName> owner: "+post.getUserName()+"</userName>");
-                    res.print("<group> in: "+post.getGroup()+"</group>");
-                    res.print("</post>");
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-//            }
-            res.print("</root>");
-        }
-        else    {
-//            for(Object [] el: chatmessage){
-                try {
-                    res.print("Message: "+post.getMessage());
-                    res.print("#: "+post.getHashTag());
-                    res.print("owner: "+post.getUserName());
-                    res.print("in: "+post.getGroup());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-//            }
-        }
+            try {
+                res.print(XMLSerializer.Serialize(post));
+            } catch (JAXBException e) {
+                e.printStackTrace();
+            }
         res.flush();
         res.close();
     }
@@ -113,7 +93,7 @@ public class ServletPostManager extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        DBQuerry db = new DBQuerry();
+        DBQuerryInterface db = new DBQuerry();
         Map<String, ArrayList<Post>> allPost= new HashMap<>();
         String userName = (String)session.getAttribute("user");
         String message = request.getParameter("message");
@@ -151,13 +131,13 @@ public class ServletPostManager extends HttpServlet {
         else if(edit !=null){
             String group = request.getParameter("editGroup");
             message= request.getParameter("editMessage");
-//            message =message.replace("<br/>", "");
             Post p= new Post(userName,message, group);
             Part part = extractFile(request, "updateFile");
             if(part!=null){
                 db.updatePost(id,p, part.getInputStream());
             }
             else{
+                System.out.println("edit no input stream");
                 db.updatePost(id,p,null);
             }
         }
@@ -188,7 +168,7 @@ public class ServletPostManager extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Map<String, ArrayList<Post>> allPost= new HashMap<>();
-        DBQuerry db = new DBQuerry();
+        DBQuerryInterface db = new DBQuerry();
         String logOut = request.getParameter("LogOut");
         String search = request.getParameter("search");
         HttpSession session = request.getSession();

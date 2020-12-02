@@ -1,8 +1,10 @@
 package servlet;
 
 
+import Helper.UserManager;
+import Helper.UserManagerInterface;
 import model.User;
-import model.UserManager;
+import model.UserManagerJson;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -25,7 +27,7 @@ public class ServletExtractUser extends HttpServlet {
      */
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        UserManager userManager = UserManager.getInstance();
+        UserManagerInterface userManager = new UserManager().getUserManager("","","");
         List<User> allUser = userManager.getAllUser();
         req.getSession().setAttribute("allUser",allUser);
         RequestDispatcher redirect = req.getRequestDispatcher("load.jsp");
