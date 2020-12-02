@@ -12,25 +12,29 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-// singleteon and factory
-public class UserManager implements UserManagerInterface {
+/**
+ * singleteon pattern
+ * to get the single instance of the usermanagerJson
+ * to read the file from json
+ */
+public class UserManagerJson implements UserManagerInterface {
     private List<User> allUser;
     private Map<String, ArrayList<String>> allGroup;
     private Map<String, Set<String>> userMembership;
 
-    private static UserManager userManager;
+    private static UserManagerJson userManager;
 
-    private UserManager(){
-        this.allUser = initAllUser();
-        this.allGroup = initAllGroup();
-        this.userMembership = initMemberShip();
+    private UserManagerJson(String pathToFileUser, String pathToFileGroup, String pathtoFileMembership){
+        this.allUser = initAllUser(pathToFileUser);
+        this.allGroup = initAllGroup(pathToFileGroup);
+        this.userMembership = initMemberShip(pathtoFileMembership);
     }
 
-    public static UserManager getInstance(){
+    public static UserManagerJson getInstance(String pathToFileUser, String pathToFileGroup, String pathtoFileMembership){
         if(userManager ==null){
-            synchronized (UserManager.class){
+            synchronized (UserManagerJson.class){
                 if(userManager == null){
-                    userManager = new UserManager();
+                    userManager = new UserManagerJson(pathToFileUser, pathToFileGroup,pathtoFileMembership);
                 }
             }
         }
@@ -53,18 +57,26 @@ public class UserManager implements UserManagerInterface {
         }
         return null;
     }
-    private List<User> initAllUser(){
-        User[] all= new Gson().fromJson(readFromFile(), User[].class);
-        List<User> allUser = new ArrayList<>();
-        for(User u : all){
-            allUser.add(u);
+    private List<User> initAllUser(String pathToFileUser){
+        JSONArray allUser = null;
+        try {
+            allUser = (JSONArray) new JSONParser().parse(new FileReader(pathToFileUser));
+        } catch (ParseException | FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        List<User> allUserList = new ArrayList<>();
+        for(Object o : allUser){
+            Map<String, String> u = (Map) o;
+            allUserList.add(new User(u.get("username"), u.get("pwd"), u.get("email")));
         }
         return allUser;
     }
-    private Map<String, ArrayList<String>> initAllGroup(){
+    private Map<String, ArrayList<String>> initAllGroup(String pathToFileGroup){
         JSONArray group = null;
         try {
-            group = (JSONArray) new JSONParser().parse(new FileReader("C:\\Users\\Owner\\IdeaProjects\\A2\\src\\main\\webapp\\WEB-INF\\group.json"));
+            group = (JSONArray) new JSONParser().parse(new FileReader(pathToFileGroup));
         } catch (ParseException | FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -92,10 +104,10 @@ public class UserManager implements UserManagerInterface {
         }
         return groupMap;
     }
-    private Map<String, Set<String>> initMemberShip(){
+    private Map<String, Set<String>> initMemberShip(String pathToFileMembership){
         JSONArray membership = null;
         try {
-            membership = (JSONArray) new JSONParser().parse(new FileReader("C:\\Users\\Owner\\IdeaProjects\\A2\\src\\main\\webapp\\WEB-INF\\membership.json"));
+            membership = (JSONArray) new JSONParser().parse(new FileReader(pathToFileMembership));
         } catch (ParseException | FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -132,10 +144,6 @@ public class UserManager implements UserManagerInterface {
         }
         return groupMember;
     }
-
-
-
-
 
     @Override
     public List<User> getAllUser() {

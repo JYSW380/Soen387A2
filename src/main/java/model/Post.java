@@ -1,7 +1,13 @@
 package model;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.time.LocalTime;
 
+@XmlRootElement(name = "Post")
+@XmlType(propOrder = {"message","hashTag","userName","group"})
 public class Post implements Serializable{
 
 
@@ -33,6 +39,7 @@ public class Post implements Serializable{
             this.group=group;
         }
     }
+    @XmlElement
     public String getGroup() {
         return group;
     }
@@ -44,7 +51,7 @@ public class Post implements Serializable{
     public void setUserName(String userName) {
         this.userName = userName;
     }
-
+    @XmlElement
     public String getUserName() {
         return userName;
     }
@@ -52,7 +59,7 @@ public class Post implements Serializable{
     public void setUser(String user) {
         this.userName = user;
     }
-
+    @XmlTransient
     public int getId() {
         return id;
     }
@@ -60,7 +67,7 @@ public class Post implements Serializable{
     public void setId(int id) {
         this.id = id;
     }
-
+    @XmlTransient
     public LocalTime getTimeStamp() {
         return timeStamp;
     }
@@ -69,8 +76,7 @@ public class Post implements Serializable{
         this.timeStamp = timeStamp;
     }
 
-
-
+    @XmlElement
     public String getMessage() {
         return message;
     }
@@ -94,6 +100,7 @@ public class Post implements Serializable{
             this.hashTag="";
         }
     }
+    @XmlElement
     public String getHashTag() {
         return hashTag;
     }
@@ -101,6 +108,7 @@ public class Post implements Serializable{
     public void setHashTag(String hashTag) {
         this.hashTag = hashTag;
     }
+    @XmlTransient
     public boolean isUpdate() {
         return update;
     }
@@ -108,7 +116,7 @@ public class Post implements Serializable{
     public void setUpdate(boolean update) {
         this.update = update;
     }
-
+    @XmlTransient
     public LocalTime getUpdateTime() {
         return updateTime;
     }

@@ -1,6 +1,8 @@
 package servlet;
 
-import model.UserManager;
+import Helper.UserManager;
+import Helper.UserManagerInterface;
+import model.UserManagerJson;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -22,7 +24,7 @@ public class ServletAuth extends HttpServlet {
      * @throws IOException
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UserManager userManager = UserManager.getInstance();
+        UserManagerInterface userManager = new UserManager().getUserManager("","","");
         String logUser = request.getParameter("user");
         Set<String> userGroup =  userManager.getGroup(logUser);
         HttpSession session = request.getSession();

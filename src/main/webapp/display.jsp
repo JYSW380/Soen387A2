@@ -71,11 +71,25 @@
                                     <form action="ServletPostManager" method="post" enctype="multipart/form-data">
 <%--                                        set value so the include page can use it --%>
                                         <c:set var="currentPost" value="${post}" scope="session"></c:set>
-                                        <c:set var="uGroup" value="${EditGroup}" scope="session"></c:set>
                                         <jsp:include page="post.jsp" />
                                         <c:choose>
                                             <c:when test= "${user.equals(post.userName) || fn:contains(userGroup, 'admins')}" >
-                                                <jsp:include page="extPost.jsp"></jsp:include>
+                                                <div>
+                                                    <label class="filelabel">File
+                                                        <input type="file" name="updateFile">
+                                                        <i class="fal fa-upload uploadfile"></i>
+                                                    </label>
+                                                    <div>
+                                                        <select name="editGroup" id="editGroup">
+                                                            <option value=""> </option>
+                                                            <c:forEach items="${userGroup}" var="uGroup" >
+                                                                <option value="${uGroup}">${uGroup}</option>
+                                                            </c:forEach>
+                                                        </select>
+                                                        <button type="submit" value="edit" name="edit">Edit<i class="fal fa-edit"></i></button>
+                                                        <button type="submit" value="delete" name="delete">Delete<i class="fal fa-trash"></i></button>
+                                                    </div>
+                                                </div>
                                             </c:when>
                                             <c:otherwise>
                                             </c:otherwise>
