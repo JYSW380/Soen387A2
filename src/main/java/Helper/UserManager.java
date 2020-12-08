@@ -3,8 +3,6 @@ package Helper;
 import model.UserManagerJson;
 import org.apache.commons.io.FilenameUtils;
 
-import java.nio.file.Files;
-
 /**
  * factory to get the userManager instance
  * the instance would be depend on the path to file
@@ -14,12 +12,15 @@ import java.nio.file.Files;
 public class UserManager {
     public UserManagerInterface getUserManager(String pathToFileUser, String pathToFileGroup, String pathtoFileMembership){
         if(pathToFileUser.equalsIgnoreCase("")||pathToFileUser==null){
+            //pathToFileUser = "C:\\Users\\Andres Vidoza\\Documents\\code\\java\\SOEN387_A2\\Soen387A2\\src\\main\\webapp\\WEB-INF\\allUser.json";
             pathToFileUser = "C:\\Users\\Owner\\IdeaProjects\\A2\\src\\main\\webapp\\WEB-INF\\allUser.json";
         }
         if(pathToFileGroup.equalsIgnoreCase("")||pathToFileGroup ==null){
+            //pathToFileGroup = "C:\\Users\\Andres Vidoza\\Documents\\code\\java\\SOEN387_A2\\Soen387A2\\src\\main\\webapp\\WEB-INF\\group.json";
             pathToFileGroup = "C:\\Users\\Owner\\IdeaProjects\\A2\\src\\main\\webapp\\WEB-INF\\group.json";
         }
         if(pathtoFileMembership.equalsIgnoreCase("")||pathtoFileMembership ==null){
+            //pathtoFileMembership= "C:\\Users\\Andres Vidoza\\Documents\\code\\java\\SOEN387_A2\\Soen387A2\\src\\main\\webapp\\WEB-INF\\membership.json";
             pathtoFileMembership= "C:\\Users\\Owner\\IdeaProjects\\A2\\src\\main\\webapp\\WEB-INF\\membership.json";
         }
         String className =  FilenameUtils.getExtension(pathToFileUser);

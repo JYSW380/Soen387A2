@@ -1,7 +1,6 @@
 package model;
 
 import Helper.UserManagerInterface;
-import com.google.gson.Gson;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -44,7 +43,7 @@ public class UserManagerJson implements UserManagerInterface {
         String jsonString="";
         try{
 //change the path
-            File file = new File("C:\\Users\\Owner\\IdeaProjects\\A2\\src\\main\\webapp\\WEB-INF\\allUser.json");
+            File file = new File("C:\\Users\\Andres Vidoza\\Documents\\code\\java\\SOEN387_A2\\Soen387A2\\src\\main\\webapp\\WEB-INF\\allUser.json");
             Scanner readFile = new Scanner(file);
             while(readFile.hasNextLine()){
                 jsonString +=readFile.nextLine()+"\r\n";
@@ -57,7 +56,8 @@ public class UserManagerJson implements UserManagerInterface {
         }
         return null;
     }
-    private List<User> initAllUser(String pathToFileUser){
+
+    public List<User> initAllUser(String pathToFileUser){
         JSONArray allUser = null;
         try {
             allUser = (JSONArray) new JSONParser().parse(new FileReader(pathToFileUser));
@@ -71,9 +71,12 @@ public class UserManagerJson implements UserManagerInterface {
             Map<String, String> u = (Map) o;
             allUserList.add(new User(u.get("username"), u.get("pwd"), u.get("email")));
         }
+
+        System.out.println("INIT all users " + allUser);
         return allUser;
     }
-    private Map<String, ArrayList<String>> initAllGroup(String pathToFileGroup){
+
+    public Map<String, ArrayList<String>> initAllGroup(String pathToFileGroup){
         JSONArray group = null;
         try {
             group = (JSONArray) new JSONParser().parse(new FileReader(pathToFileGroup));
@@ -102,9 +105,12 @@ public class UserManagerJson implements UserManagerInterface {
 
             }
         }
+
+        System.out.println("INIT group " + groupMap);
         return groupMap;
     }
-    private Map<String, Set<String>> initMemberShip(String pathToFileMembership){
+
+    public Map<String, Set<String>> initMemberShip(String pathToFileMembership){
         JSONArray membership = null;
         try {
             membership = (JSONArray) new JSONParser().parse(new FileReader(pathToFileMembership));
@@ -113,12 +119,15 @@ public class UserManagerJson implements UserManagerInterface {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //[{"admin"=>[]},{"concordia"=>[comp....]},{"encs"=>["soen","comp"]}
         Map<String, Set<String>> groupMember = new TreeMap<>();
         for(Object o : membership) {
             Map<String, String> u = (Map) o;
             String [] userGroup= u.get("group").split(",");
             Set<String> userSet = new HashSet<String>();
             for(String s : userGroup){
+
                 if(s.equalsIgnoreCase("admins")){
                     //add every thing
                     allGroup.forEach((k,v)->{
@@ -132,7 +141,9 @@ public class UserManagerJson implements UserManagerInterface {
                     userSet.add(s);
                     continue;
                 }
+
                 userSet.add(s);
+
                 if(allGroup.containsKey(s)){
                     ArrayList<String> children = allGroup.get(s);
                     for(String c: children){ // add child one by one
@@ -142,6 +153,8 @@ public class UserManagerJson implements UserManagerInterface {
             }
             groupMember.put(u.get("name"), userSet);
         }
+
+        System.out.println("INIT MEMBERSHIP " + groupMember);
         return groupMember;
     }
 
@@ -164,4 +177,5 @@ public class UserManagerJson implements UserManagerInterface {
     public Map<String, Set<String>> getAllUserGroup() {
         return userMembership;
     }
+
 }
